@@ -8,6 +8,7 @@ class Sudokus:
         self.data = np.loadtxt(path, delimiter=",", skiprows=1, dtype=str)
 
     def get_next(self, idx):
+        # Sudoku is represented as their current state and the corresponding solution
         return {
             "current": torch.from_numpy(np.array([int(d) for d in self.data[idx, 0]])).long().view(9, 9),
             "solution": torch.from_numpy(np.array([int(d) for d in self.data[idx, 1]])).long().view(9, 9)
@@ -16,6 +17,7 @@ class Sudokus:
     def get_random(self):
         return self.get_next(randint(0, len(self.data) - 1))
 
+# Is the given action allowed?
 def is_valid_action(game_state, action):
     if action["value"] == 0:
         return False
@@ -43,6 +45,7 @@ def num_blanks(game_state):
 def is_finished(game_state):
     return num_blanks(game_state).item() == 0
 
+# Get all possible (allowed) actions
 def get_actions(game_state):
     actions = []
     coordinates = torch.nonzero(game_state["current"] == 0)
@@ -72,6 +75,7 @@ def apply_action(game_state, action):
         new_state["current"][action["y"], action["x"]] = action["value"]
     return new_state
 
+# simulate game states given the actions
 def get_next_states(game_state, actions):
     next_states = []
     for action in actions:
